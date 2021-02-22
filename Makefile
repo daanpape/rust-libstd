@@ -26,19 +26,13 @@ define Package/rust-libstd/description
   The Rust standard library for dynamically linked applications
 endef
 	
-define Build/Prepare
-	$(call Build/Prepare/Default)
-	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) $(TOPDIR)/build_dir/hostpkg/rust/library/* $(PKG_BUILD_DIR)/
-endef
-
 define Build/Compile
-	cd $(PKG_BUILD_DIR)/std && cargo rustc --target=$(RUSTC_TARGET_ARCH) --release -- -C linker=$(TARGET_CC_NOCACHE) -C ar=$(TARGET_AR)
+	echo 'Nothing to be compiled'
 endef
 
 define Package/rust-libstd/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libwembed.so* $(1)/usr/lib/
+	$(CP) $(TOPDIR)/staging_dir/hostpkg/lib/rustlib/$(RUSTC_TARGET_ARCH)/lib/libstd-*.so $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,rust-libstd))
