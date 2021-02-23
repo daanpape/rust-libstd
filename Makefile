@@ -17,22 +17,30 @@ include $(INCLUDE_DIR)/package.mk
 include ../../lang/rust/rustc-triple.mk
 
 define Package/rust-libstd
-  SECTION:=lang
-  CATEGORY:=Languages
-  TITLE:=Rust standard library
+	SECTION:=lang
+	CATEGORY:=Languages
+	TITLE:=Rust standard library
 endef
 
 define Package/rust-libstd/description
-  The Rust standard library for dynamically linked applications
+	The Rust standard library for dynamically linked applications
+endef
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	mkdir -p $(PKG_BUILD_DIR)
+	$(CP) $(TOPDIR)/staging_dir/hostpkg/lib/rustlib/$(RUSTC_TARGET_ARCH)/lib/libstd-*.so $(PKG_BUILD_DIR)/
 endef
 	
 define Build/Compile
-	echo 'Nothing to be compiled'
+	stat $(PKG_BUILD_DIR)/*.so
+	$(TOPDIR)/staging_dir/toolchain-*/bin/mips-openwrt-linux-strip -s $(PKG_BUILD_DIR)/*.so
+	stat $(PKG_BUILD_DIR)/*.so
 endef
 
 define Package/rust-libstd/install
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(TOPDIR)/staging_dir/hostpkg/lib/rustlib/$(RUSTC_TARGET_ARCH)/lib/libstd-*.so $(1)/usr/lib/
+	$(CP) $(PKG_BUILD_DIR)/libstd-*.so $(1)/usr/lib/
 endef
 
 $(eval $(call BuildPackage,rust-libstd))
